@@ -5,13 +5,20 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function GET(req: Request) {
   await connectDB();
+  const userAgent = req.headers.get("user-agent") || "";
 
+  const isBot = /bot|crawl|spider|slurp|bing|facebook|preview/i.test(userAgent);
+
+  if (isBot) {
+    return NextResponse.json({ ignored: true });
+  }
+  
   const cookieHeader = req.headers.get("cookie") || "";
   const cookies = Object.fromEntries(
     cookieHeader.split("; ").map((c) => {
       const [k, v] = c.split("=");
       return [k, decodeURIComponent(v)];
-    })
+    }),
   );
 
   let visitorId = cookies["visitor-id"];
@@ -28,7 +35,7 @@ export async function GET(req: Request) {
     await Visitor.updateOne(
       { visitorId },
       { $set: { lastSeen: now } },
-      { upsert: true }
+      { upsert: true },
     );
   }
 
@@ -42,7 +49,7 @@ export async function GET(req: Request) {
   if (!cookies["visitor-id"]) {
     response.headers.set(
       "Set-Cookie",
-      `visitor-id=${visitorId}; Path=/; Max-Age=31536000; HttpOnly`
+      `visitor-id=${visitorId}; Path=/; Max-Age=31536000; HttpOnly`,
     );
   }
 
