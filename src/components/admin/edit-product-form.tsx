@@ -53,7 +53,7 @@ export default function EditProductForm({
   async function getProduct() {
     try {
       const product = await fetchProduct(
-        new mongoose.Types.ObjectId(productId)
+        new mongoose.Types.ObjectId(productId),
       );
 
       setName(product.name);
@@ -127,7 +127,7 @@ export default function EditProductForm({
         </SelectTrigger>
         <SelectContent>
           {categories.map((cat) => (
-            <SelectItem key={cat.id} value={cat.id}>
+            <SelectItem key={cat.id.toString()} value={cat.id.toString()}>
               {cat.name}
             </SelectItem>
           ))}

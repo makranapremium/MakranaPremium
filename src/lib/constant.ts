@@ -1,4 +1,5 @@
 import { Award, Clock, Gem, Users } from "lucide-react";
+import mongoose from "mongoose";
 
 export const apiDefaults = {
   limit: 12,
@@ -17,7 +18,7 @@ export const apiDefaults = {
 
 export const staticCategories = [
   {
-    id: "686d09a90c8d4186bd551091",
+    id: new mongoose.Types.ObjectId("686d09a90c8d4186bd551091"),
     name: "luxury marble tables",
     slug: "luxury-marble-tables",
     imageUrl:
@@ -26,7 +27,7 @@ export const staticCategories = [
     updatedAt: "2025-07-10T08:13:14.472Z",
   },
   {
-    id: "67e3d9c93b533a116b99d6f8",
+    id: new mongoose.Types.ObjectId("67e3d9c93b533a116b99d6f8"),
     name: "marble slab",
     slug: "marble-slab",
     imageUrl:
@@ -35,7 +36,7 @@ export const staticCategories = [
     updatedAt: "2025-03-26T10:41:13.865Z",
   },
   {
-    id: "6820662bffbc096b3bece839",
+    id: new mongoose.Types.ObjectId("6820662bffbc096b3bece839"),
     name: "marble crafts",
     slug: "marble-crafts",
     imageUrl:
@@ -44,7 +45,7 @@ export const staticCategories = [
     updatedAt: "2025-05-11T09:43:15.057Z",
   },
   {
-    id: "686f761a56f7bb04e1547a7a",
+    id: new mongoose.Types.ObjectId("686f761a56f7bb04e1547a7a"),
     name: "fire palace",
     slug: "fire-palace",
     imageUrl:
@@ -53,7 +54,7 @@ export const staticCategories = [
     updatedAt: "2025-07-30T06:23:49.311+00:00",
   },
   {
-    id: "687cbb70f3bb8b1a5dc659bb",
+    id: new mongoose.Types.ObjectId("687cbb70f3bb8b1a5dc659bb"),
     name: "fountain & flooring",
     slug: "fountain-and-flooring",
     imageUrl:
@@ -62,7 +63,7 @@ export const staticCategories = [
     updatedAt: "2025-07-20T09:48:32.344Z",
   },
   {
-    id: "67e3d5743b533a116b99d6ad",
+    id: new mongoose.Types.ObjectId("67e3d5743b533a116b99d6ad"),
     name: "basin",
     slug: "basin",
     imageUrl:

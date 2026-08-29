@@ -19,27 +19,34 @@ export interface IProduct extends Document {
   updatedAt: Date;
 }
 
-// Category Schema
 const CategorySchema = new Schema<ICategory>(
   {
     name: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
-    imageUrl: { type: String, required: true },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
   },
   {
-    timestamps: true, // Automatically adds createdAt & updatedAt
+    timestamps: true,
     toJSON: {
       virtuals: true,
       transform: (_, ret) => {
-        ret.id = ret._id; // Replace _id with id
-        delete ret._id;
-        delete ret.__v; // Remove Mongoose version key
+        const { _id, __v, ...category } = ret;
+        return {
+          ...category,
+          id: _id,
+        };
       },
     },
-  }
+  },
 );
 
-// Product Schema
 const ProductSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
@@ -60,12 +67,14 @@ const ProductSchema = new Schema<IProduct>(
     toJSON: {
       virtuals: true,
       transform: (_, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
+        const { _id, __v, ...product } = ret;
+        return {
+          ...product,
+          id: _id,
+        };
       },
     },
-  }
+  },
 );
 
 // Export models

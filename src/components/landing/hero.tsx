@@ -12,7 +12,7 @@ const Hero = () => {
       {/* Background */}
       <div className="absolute inset-0">
         <Image
-          src="/bg.jpg?height=1080&width=1920"
+          src="/bg.jpg"
           alt="Luxury Marble Showroom"
           fill
           priority

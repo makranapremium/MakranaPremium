@@ -104,7 +104,7 @@ const AdminCategories = ({ page, totalPages, categories }: AdminCategoriesParams
               </TableRow>
             ) : (
               categories.map((category, index) => (
-                <TableRow key={category.id} className="hover:bg-gray-50">
+                <TableRow key={category.id.toString()} className="hover:bg-gray-50">
                   <TableCell className="text-center font-medium text-gray-600">{(page - 1) * 10 + index + 1}</TableCell>
                   <TableCell className="font-medium">{category.name}</TableCell>
                   <TableCell className="text-center">
@@ -124,7 +124,7 @@ const AdminCategories = ({ page, totalPages, categories }: AdminCategoriesParams
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => openDialog("edit", category.id)}
+                        onClick={() => openDialog("edit", category.id.toString())}
                         className="border-blue-200 text-blue-700 hover:bg-blue-50"
                       >
                         <Pen size={14} />
@@ -132,7 +132,7 @@ const AdminCategories = ({ page, totalPages, categories }: AdminCategoriesParams
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => openDialog("delete", category.id)}
+                        onClick={() => openDialog("delete", category.id.toString())}
                         className="border-red-200 text-red-700 hover:bg-red-50"
                       >
                         <Trash2 size={14} />

@@ -112,7 +112,7 @@ const ShopProducts = () => {
         <MasonryLayout breakpoints={{ 1200: 3, 768: 2, 500: 1 }}>
           {staticCategories.map((category, index) => (
             <CategoryCard
-              key={category.id}
+              key={category.id.toString()}
               category={category}
               showNewBadge={index < 2}
             />
