@@ -1,6 +1,9 @@
+import mongoose from "mongoose";
+
 export interface CategoryType {
-  id: string;
+  id: mongoose.Types.ObjectId;
   name: string;
+  slug: string;
   imageUrl: string;
   createdAt: string;
   updatedAt: string;
@@ -11,8 +14,9 @@ export interface ProductType {
   name: string;
   slug: string;
   categoryId: {
-    id: string,
+    id: mongoose.Types.ObjectId,
     name: string,
+    slug: string
   };
   imageUrl: string;
   createdAt: string;

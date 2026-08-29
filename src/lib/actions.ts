@@ -14,7 +14,7 @@ export async function getProducts(
   categoryId?: mongoose.Types.ObjectId,
   page?: number | 1,
   sort?: string | "createdAt",
-  order?: string | "asc"
+  order?: string | "asc",
 ): Promise<{
   products: ProductType[];
   // totalPages: number
@@ -36,13 +36,13 @@ export async function getProducts(
           sortBy && orderBy
             ? { [sortBy]: orderBy }
             : sortBy
-            ? { [sortBy]: 1 }
-            : orderBy
-            ? { createdAt: orderBy }
-            : { createdAt: "desc" }
+              ? { [sortBy]: 1 }
+              : orderBy
+                ? { createdAt: orderBy }
+                : { createdAt: "desc" },
         )
-        .populate(["categoryId"], ["id", "name"])
-    )
+        .populate(["categoryId"], ["id", "name"]),
+    ),
   );
 
   const productCount = await Product.findOne({ categoryId }).countDocuments();
@@ -56,7 +56,7 @@ export async function getProducts(
 export async function getCategories(
   page?: number,
   order?: string | "name",
-  lmt?: number
+  lmt?: number,
 ): Promise<{
   categories: CategoryType[];
   totalPages: number;
@@ -70,22 +70,32 @@ export async function getCategories(
       await Category.find({})
         .limit(lmt || limit)
         .skip(page ? (page - 1) * (lmt || limit) : 0)
-        .sort(orderBy ? { name: orderBy } : { name: -1 })
-    )
+        .sort(orderBy ? { name: orderBy } : { name: -1 }),
+    ),
   );
   if (!categories) throw new Error("Error fetching categories");
   const categoryCount = JSON.parse(
-    JSON.stringify(await Category.find().countDocuments())
+    JSON.stringify(await Category.find().countDocuments()),
   );
   return { categories, totalPages: Math.ceil(categoryCount / (lmt || limit)) };
 }
 
 export async function getCategory(
-  categoryId: mongoose.Types.ObjectId
+  categoryId: mongoose.Types.ObjectId,
 ): Promise<CategoryType> {
   await connectDB();
   const category = JSON.parse(
-    JSON.stringify(await Category.findById(categoryId))
+    JSON.stringify(await Category.findById(categoryId)),
+  );
+  return category;
+}
+
+export async function getCategoryBySlug(
+  categorySlug: string,
+): Promise<CategoryType> {
+  await connectDB();
+  const category = JSON.parse(
+    JSON.stringify(await Category.findOne({ slug: categorySlug })),
   );
   return category;
 }

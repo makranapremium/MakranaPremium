@@ -1,9 +1,10 @@
-import { getCategory } from "@/lib/actions";
+import { getCategory, getCategoryBySlug } from "@/lib/actions";
 import { getProducts } from "@/lib/actions";
 import Products from "@/components/products";
 import mongoose from "mongoose";
 import { Metadata } from "next";
 import React from "react";
+import { notFound } from "next/navigation";
 
 type PageProps = {
   ctg: string;
@@ -16,8 +17,19 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const { ctg } = await params;
 
-  // const category = await getCategory(ctg as unknown as mongoose.Types.ObjectId);
-  const category = await getCategory(new mongoose.Types.ObjectId(ctg));
+  const category = await getCategoryBySlug(ctg);
+
+  // Handle invalid / bogus category slug
+  if (!category) {
+    return {
+      title: "Category Not Found",
+      description: "The category you're looking for does not exist.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
 
   const formattedCategory = category.name
     .replace(/-/g, " ")
@@ -34,9 +46,7 @@ export const generateMetadata = async ({
     openGraph: {
       title: `${formattedCategory} - Shop Now`,
       description: `Find the best deals on ${formattedCategory}. Wide selection and great prices!`,
-      images: {
-        url: category.imageUrl,
-      },
+      images: category.imageUrl ? [{ url: category.imageUrl }] : undefined,
       url: `${process.env.BASE_URL}/categories/${ctg}`,
       type: "website",
     },
@@ -51,17 +61,16 @@ export const generateMetadata = async ({
 const Page = async ({ params }: { params: Promise<PageProps> }) => {
   const { ctg } = await params;
   // await new Promise((resolve) => setTimeout(resolve, 3000));
-  const { products, productCount } = await getProducts(
-    ctg as unknown as mongoose.Types.ObjectId
-  );
+  const category = await getCategoryBySlug(ctg);
 
-  if (!products) {
-    return <div className="text-5xl text-center">404 No Products found</div>;
+  if (!category) {
+    notFound();
   }
+  const { products, productCount } = await getProducts(category.id);
 
   return (
     <Products
-      categoryId={ctg}
+      categoryId={category.id.toString()}
       initialProducts={products}
       productCount={productCount}
     />

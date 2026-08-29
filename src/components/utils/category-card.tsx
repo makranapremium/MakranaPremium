@@ -1,12 +1,12 @@
-import Link from "next/link"
-import Image from "next/image"
-import type { CategoryType } from "@/lib/types"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Sparkles } from "lucide-react"
+import Link from "next/link";
+import Image from "next/image";
+import type { CategoryType } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 interface CategoryCardProps {
-  category: CategoryType
-  showNewBadge?: boolean
+  category: CategoryType;
+  showNewBadge?: boolean;
 }
 
 export default function CategoryCard({
@@ -14,18 +14,18 @@ export default function CategoryCard({
   showNewBadge = false,
 }: CategoryCardProps) {
   const isNew = () => {
-    if (!category.createdAt) return false
-    const createdDate = new Date(category.createdAt)
-    const now = new Date()
+    if (!category.createdAt) return false;
+    const createdDate = new Date(category.createdAt);
+    const now = new Date();
     return (
-      Math.abs(now.getTime() - createdDate.getTime()) /
-        (1000 * 60 * 60 * 24) <=
+      Math.abs(now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24) <=
       30
-    )
-  }
+    );
+  };
 
   return (
-    <Link href={`/collections/${category.id}`} className="group block">
+    // <Link href={`/collections/${category.id}`} className="group block">
+    <Link href={`/collections/${category.slug}`} className="group block">
       <div className="rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
         {/* Image */}
         <div className="relative overflow-hidden">
@@ -76,5 +76,5 @@ export default function CategoryCard({
         </div>
       </div>
     </Link>
-  )
+  );
 }

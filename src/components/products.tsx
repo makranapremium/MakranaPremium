@@ -7,14 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { fetchProducts } from "@/lib/api";
-import {
-  Search,
-  Grid3X3,
-  List,
-  Filter,
-  Home,
-  PartyPopper,
-} from "lucide-react";
+import { Search, Grid3X3, List, Filter, Home, PartyPopper } from "lucide-react";
 import ProductCard from "./utils/product-card";
 import {
   Breadcrumb,
@@ -74,7 +67,7 @@ export default function Products({
           fetchMoreProducts();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     if (observerRef.current) observer.observe(observerRef.current);
@@ -101,7 +94,7 @@ export default function Products({
                   <Fragment key={i}>
                     <BreadcrumbItem>
                       <BreadcrumbLink
-                        href={n.link}
+                        href={n.link.toString()}
                         className="hover:text-white"
                       >
                         {n.content}

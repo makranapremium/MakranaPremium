@@ -35,7 +35,7 @@ type SortOption = "name" | "newest" | "oldest";
 export default function CollectionsPage() {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<CategoryType[]>(
-    []
+    [],
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -63,7 +63,7 @@ export default function CollectionsPage() {
   // Filter and sort categories
   useEffect(() => {
     const filtered = categories.filter((category) =>
-      category.name.toLowerCase().includes(searchQuery.toLowerCase())
+      category.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     // Sort categories
@@ -294,7 +294,7 @@ export default function CollectionsPage() {
                   <div className="grid gap-4 grid-cols-1 min-[540]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                     {filteredCategories.map((category, index) => (
                       <CategoryCard
-                        key={category.id}
+                        key={category.id.toString()}
                         category={category}
                         showNewBadge={index < 2}
                       />
@@ -304,7 +304,7 @@ export default function CollectionsPage() {
                   <div className="space-y-6">
                     {filteredCategories.map((category, index) => (
                       <CategoryListItem
-                        key={category.id}
+                        key={category.id.toString()}
                         category={category}
                         showNewBadge={index < 2}
                       />
@@ -402,7 +402,7 @@ function CategoryListItem({
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white max-w-7xl mx-auto">
       <div className="py-16 px-6">
         <div className="max-w-screen mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

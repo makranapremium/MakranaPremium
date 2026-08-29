@@ -36,7 +36,8 @@ export const staticCategories = [
   },
   {
     id: "6820662bffbc096b3bece839",
-    name: "marbel crafts",
+    name: "marble crafts",
+    slug: "marble-crafts",
     imageUrl:
       "https://res.cloudinary.com/dhji69hny/image/upload/v1746954452/makrana-premium/bp3bbblnkzx4fxmoboat.jpg",
     createdAt: "2025-05-11T08:56:11.641Z",
@@ -63,6 +64,7 @@ export const staticCategories = [
   {
     id: "67e3d5743b533a116b99d6ad",
     name: "basin",
+    slug: "basin",
     imageUrl:
       "https://res.cloudinary.com/dhji69hny/image/upload/v1742984541/makrana-premium/bzqfbgzkdtwnn6tbztru.jpg",
     createdAt: "2025-03-26T10:22:44.941Z",
