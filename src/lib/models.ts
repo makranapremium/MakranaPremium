@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { Model } from "mongoose";
 
 // Interface for Category
 export interface ICategory extends Document {
@@ -14,7 +15,21 @@ export interface IProduct extends Document {
   name: string;
   imageUrl: string;
   slug: string;
+  description: string;
   categoryId: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Interface for Blog
+export interface IBlog extends Document {
+  title: string;
+  featureImage: string;
+  mainContent: string;
+  secondImage: string;
+  otherContent: string;
+  slug: string;
+  category: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +71,10 @@ const ProductSchema = new Schema<IProduct>(
       required: true,
       unique: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Category",
@@ -77,14 +96,55 @@ const ProductSchema = new Schema<IProduct>(
   },
 );
 
+const BlogSchema = new Schema<IBlog>(
+  {
+    title: { type: String, required: true },
+    featureImage: { type: String, required: true },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    mainContent: {
+      type: String,
+      required: true,
+    },
+    secondImage: {
+      type: String,
+    },
+    otherContent: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_, ret) => {
+        const { _id, __v, ...blog } = ret;
+        return {
+          ...blog,
+          id: _id,
+        };
+      },
+    },
+  },
+);
+
 // Export models
 export const Category =
   mongoose.models.Category ||
   mongoose.model<ICategory>("Category", CategorySchema);
+
 export const Product =
   mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
 
-import { Model } from "mongoose";
+export const Blog =
+  mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
 
 export interface IVisitor extends Document {
   visitorId: string;

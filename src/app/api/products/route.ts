@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       {
         products,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof ApiError || error instanceof MongooseError) {
@@ -31,14 +31,14 @@ export async function GET(req: NextRequest) {
         {
           message: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     } else {
       return NextResponse.json(
         {
           message: "Internal Server Error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -47,12 +47,14 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-    const { name, imageUrl, categoryId } = await req.json();
+    const { name, imageUrl, categoryId, description } = await req.json();
 
-    if (!name || !imageUrl || !categoryId) {
+    console.log(description)
+
+    if (!name || !imageUrl || !categoryId || !description) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -63,6 +65,7 @@ export async function POST(req: NextRequest) {
       name: productName,
       slug,
       imageUrl,
+      description,
       categoryId,
     });
 
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest) {
         product,
         message: "product added successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof ApiError || error instanceof MongooseError) {
@@ -79,14 +82,14 @@ export async function POST(req: NextRequest) {
         {
           message: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     } else {
       return NextResponse.json(
         {
           message: "Internal Server Error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }

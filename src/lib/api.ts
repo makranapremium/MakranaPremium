@@ -36,9 +36,9 @@ export const uploadToCloudinary = async (file: File | null) => {
 
 export async function fetchProducts(category?: string, page?: number) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/products?categoryId=${category}&page=${page}`
+    `${process.env.NEXT_PUBLIC_API_URL}/products?categoryId=${category}&page=${page}`,
   );
-  
+
   if (!res.ok) throw new Error("Failed to fetch products");
   return res.json();
 }
@@ -52,7 +52,7 @@ export async function fetchCategories(): Promise<CategoryType[]> {
 
 export async function fetchProduct(productId: mongoose.Types.ObjectId) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}`
+    `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}`,
   );
   if (!res.ok) throw new Error("Failed to fetch products");
   const { product } = await res.json();
@@ -61,7 +61,7 @@ export async function fetchProduct(productId: mongoose.Types.ObjectId) {
 
 export async function fetchCategory(categoryId: mongoose.Types.ObjectId) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/categories/${categoryId}`
+    `${process.env.NEXT_PUBLIC_API_URL}/categories/${categoryId}`,
   );
   if (!res.ok) throw new Error("Failed to fetch categories");
   const { category } = await res.json();
@@ -72,6 +72,7 @@ export async function addProduct(productData: {
   name: string;
   imageUrl: string;
   categoryId: string;
+  description: string;
 }) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
     headers: { "Content-Type": "application/json" },
@@ -100,7 +101,7 @@ export async function addCategory(categoryData: {
 
 export async function updateProduct(
   productId: mongoose.Types.ObjectId,
-  productData: ProductData
+  productData: ProductData,
 ) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}`,
@@ -108,7 +109,7 @@ export async function updateProduct(
       headers: { "Content-Type": "application/json" },
       method: "PUT",
       body: JSON.stringify(productData),
-    }
+    },
   );
   if (!res.ok) throw new Error("Failed to update products");
   return res.json();
@@ -116,7 +117,7 @@ export async function updateProduct(
 
 export async function updateCategory(
   categoryId: mongoose.Types.ObjectId,
-  categoryData: CategoryData
+  categoryData: CategoryData,
 ) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/categories/${categoryId}`,
@@ -124,7 +125,7 @@ export async function updateCategory(
       headers: { "Content-Type": "application/json" },
       method: "PUT",
       body: JSON.stringify(categoryData),
-    }
+    },
   );
   if (!res.ok) throw new Error("Failed to update category");
   return res.json();
@@ -135,7 +136,7 @@ export async function deleteProduct(productId: mongoose.Types.ObjectId) {
     `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}`,
     {
       method: "DELETE",
-    }
+    },
   );
   if (!res.ok) throw new Error("Failed to delete products");
   return res.json();
@@ -146,9 +147,8 @@ export async function deleteCategory(categoryId: mongoose.Types.ObjectId) {
     `${process.env.NEXT_PUBLIC_API_URL}/categories/${categoryId}`,
     {
       method: "DELETE",
-    }
+    },
   );
   if (!res.ok) throw new Error("Failed to delete category");
   return res.json();
 }
-

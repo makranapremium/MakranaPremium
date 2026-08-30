@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, Fragment } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import Image from "next/image";
 import type { ProductType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -29,62 +29,222 @@ export default function Products({
   productCount: number;
 }) {
   const [products, setProducts] = useState<ProductType[]>(initialProducts);
-  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+
+  /*
+   * We use refs for pagination/loading because refs update synchronously.
+   *
+   * React state updates are asynchronous, so using only `isLoading`
+   * can allow multiple IntersectionObserver callbacks to start the
+   * same request before React has re-rendered.
+   */
+  const pageRef = useRef(1);
+  const loadingRef = useRef(false);
+
+  const initialHasMore = initialProducts.length < productCount;
+
+  const hasMoreRef = useRef(initialHasMore);
+
+  const [hasMore, setHasMore] = useState(initialHasMore);
+
   const observerRef = useRef<HTMLDivElement | null>(null);
+
+  /*
+   * Keep a ref to the latest fetch function.
+   *
+   * This allows the IntersectionObserver to stay stable without
+   * having to recreate it every time products/isLoading changes.
+   */
+  const fetchMoreProductsRef = useRef<() => Promise<void>>(async () => {});
 
   const categoryName =
     products[0]?.categoryId?.name
       ?.replace(/-/g, " ")
       .replace(/\b\w/g, (c: string) => c.toUpperCase()) || "Products";
 
+  /**
+   * Fetch the next page.
+   */
   const fetchMoreProducts = async () => {
-    if (isLoading) return;
+    /*
+     * IMPORTANT:
+     * Use refs here rather than state to prevent duplicate requests.
+     */
+    if (loadingRef.current || !hasMoreRef.current) {
+      return;
+    }
+
+    loadingRef.current = true;
     setIsLoading(true);
+
+    const nextPage = pageRef.current + 1;
+
     try {
-      const { products: newProducts } = await fetchProducts(ctg, page + 1);
-      if (newProducts) {
-        setProducts((prev) => [...prev, ...newProducts]);
-        setPage((prev) => prev + 1);
+      const response = await fetchProducts(ctg, nextPage);
+
+      const newProducts = response?.products ?? [];
+
+      /*
+       * If the API returns an empty array, there is nothing else
+       * to load. Permanently stop the observer from fetching.
+       */
+      if (newProducts.length === 0) {
+        hasMoreRef.current = false;
+        setHasMore(false);
+        return;
       }
+
+      setProducts((prevProducts) => {
+        /*
+         * Protect against duplicate products.
+         *
+         * This is useful if the backend accidentally returns
+         * overlapping pages.
+         */
+        const existingIds = new Set(prevProducts.map((product) => product.id));
+
+        const uniqueProducts = newProducts.filter(
+          (product: ProductType) => !existingIds.has(product.id),
+        );
+
+        const updatedProducts = [...prevProducts, ...uniqueProducts];
+
+        /*
+         * If we've reached the known total, stop fetching.
+         */
+        if (updatedProducts.length >= productCount) {
+          hasMoreRef.current = false;
+          setHasMore(false);
+        }
+
+        return updatedProducts;
+      });
+
+      /*
+       * Only update the page after a successful response.
+       */
+      pageRef.current = nextPage;
     } catch (error) {
-      console.error("Error fetching more products:", error);
+      console.error("[Products] Error fetching more products:", error);
     } finally {
+      loadingRef.current = false;
       setIsLoading(false);
     }
   };
 
+  /*
+   * Always keep the ref pointing to the latest function.
+   */
   useEffect(() => {
+    fetchMoreProductsRef.current = fetchMoreProducts;
+  });
+
+  /**
+   * IntersectionObserver.
+   *
+   * This observer is intentionally created only when the category
+   * changes rather than whenever products/isLoading changes.
+   */
+  useEffect(() => {
+    const element = observerRef.current;
+
+    if (!element) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          !isLoading &&
-          products.length < productCount
-        ) {
-          fetchMoreProducts();
+        const entry = entries[0];
+
+        if (!entry?.isIntersecting) {
+          return;
         }
+
+        fetchMoreProductsRef.current();
       },
-      { threshold: 1.0 },
+      {
+        /*
+         * Start loading before the user actually reaches the bottom.
+         */
+        rootMargin: "300px 0px",
+        threshold: 0,
+      },
     );
 
-    if (observerRef.current) observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [isLoading, products.length, productCount]);
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [ctg]);
+
+  /**
+   * If the category changes while this component remains mounted,
+   * reset pagination state.
+   */
+  useEffect(() => {
+    pageRef.current = 1;
+    loadingRef.current = false;
+
+    const newHasMore = initialProducts.length < productCount;
+
+    hasMoreRef.current = newHasMore;
+    setHasMore(newHasMore);
+
+    setProducts(initialProducts);
+    setIsLoading(false);
+  }, [ctg, initialProducts, productCount]);
 
   const navList = [
-    { link: "/", content: <Home size={"20px"} /> },
-    { link: "/collections", content: "Collections" },
-    { link: products[0]?.categoryId.id || "Products", content: categoryName },
+    {
+      link: "/",
+      content: <Home size={"20px"} />,
+    },
+    {
+      link: "/collections",
+      content: "Collections",
+    },
+    {
+      link: products[0]?.categoryId?.id || "Products",
+      content: categoryName,
+    },
   ];
 
+  /*
+   * Client-side search.
+   *
+   * Your existing implementation only had the search input but
+   * wasn't actually filtering the displayed products.
+   */
+  const filteredProducts = searchQuery.trim()
+    ? products.filter((product) => {
+        const query = searchQuery.toLowerCase();
+
+        /*
+         * Adjust these fields if your ProductType uses different names.
+         */
+        const productName =
+          typeof product.name === "string" ? product.name.toLowerCase() : "";
+
+        const productDescription =
+          typeof product.description === "string"
+            ? product.description.toLowerCase()
+            : "";
+
+        return (
+          productName.includes(query) || productDescription.includes(query)
+        );
+      })
+    : products;
+
   return (
-    <div className="max-w-screen overflow-x-hidden   min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="max-w-screen overflow-x-hidden min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white pt-24 pb-16">
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/20" />
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumbs */}
           <nav className="flex flex-wrap items-center text-gray-300 mb-6 sm:mb-8">
@@ -100,6 +260,7 @@ export default function Products({
                         {n.content}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
+
                     {i < navList.length - 1 && <BreadcrumbSeparator />}
                   </Fragment>
                 ))}
@@ -110,6 +271,7 @@ export default function Products({
           <div className="text-center px-2 sm:px-0">
             <div className="inline-flex items-center space-x-2 bg-amber-600/20 rounded-full px-4 py-1 mb-4 sm:mb-6 text-sm sm:text-base">
               <Filter className="w-4 h-4 text-amber-400" />
+
               <span className="text-amber-300 font-medium">
                 Premium Collection
               </span>
@@ -117,6 +279,7 @@ export default function Products({
 
             <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
               {categoryName}
+
               <span className="block text-xl sm:text-2xl lg:text-3xl font-normal text-gray-300 mt-1 sm:mt-2">
                 Marble Collection
               </span>
@@ -131,14 +294,24 @@ export default function Products({
             {/* Stats */}
             <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
               {[
-                { label: "Products", value: productCount },
-                { label: "Quality", value: "Premium" },
-                { label: "Excellence", value: "Handcrafted" },
+                {
+                  label: "Products",
+                  value: productCount,
+                },
+                {
+                  label: "Quality",
+                  value: "Premium",
+                },
+                {
+                  label: "Excellence",
+                  value: "Handcrafted",
+                },
               ].map((stat, idx) => (
                 <div key={idx} className="text-center min-w-[80px]">
                   <div className="text-2xl sm:text-3xl lg:text-3xl font-bold text-white">
                     {stat.value}
                   </div>
+
                   <div className="text-gray-300 text-sm sm:text-base">
                     {stat.label}
                   </div>
@@ -156,6 +329,7 @@ export default function Products({
             {/* Search */}
             <div className="relative flex-1 max-w-full sm:max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+
               <Input
                 placeholder="Search products..."
                 value={searchQuery}
@@ -172,15 +346,24 @@ export default function Products({
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className="rounded-none bg-amber-600 hover:bg-amber-700"
+                  className={
+                    viewMode === "grid"
+                      ? "rounded-none bg-amber-600 hover:bg-amber-700"
+                      : "rounded-none"
+                  }
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </Button>
+
                 <Button
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className="rounded-none"
+                  className={
+                    viewMode === "list"
+                      ? "rounded-none bg-amber-600 hover:bg-amber-700"
+                      : "rounded-none"
+                  }
                 >
                   <List className="w-4 h-4" />
                 </Button>
@@ -191,7 +374,7 @@ export default function Products({
                 variant="secondary"
                 className="px-3 py-1 bg-amber-100 text-amber-800"
               >
-                {products.length} results
+                {filteredProducts.length} results
               </Badge>
             </div>
           </div>
@@ -200,7 +383,7 @@ export default function Products({
 
       {/* Products Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {products.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-16 sm:py-20">
             <div className="relative mb-6 sm:mb-8">
               <Image
@@ -211,22 +394,26 @@ export default function Products({
                 className="opacity-50"
               />
             </div>
+
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
               {searchQuery
                 ? "No products match your search"
                 : "No products in this category yet!"}
             </h2>
+
             <p className="text-gray-600 mb-6 sm:mb-8 max-w-md">
               {searchQuery
                 ? "Try adjusting your search terms or browse our other categories."
                 : "Check back later or explore other categories while we add more products."}
             </p>
+
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
               {searchQuery && (
                 <Button onClick={() => setSearchQuery("")} variant="outline">
                   Clear Search
                 </Button>
               )}
+
               <Button
                 onClick={() => window.location.reload()}
                 className="bg-amber-600 hover:bg-amber-700"
@@ -237,28 +424,36 @@ export default function Products({
           </div>
         ) : (
           <>
+            {/* Products */}
             {viewMode === "grid" ? (
-              // <MasonryLayout breakpoints={{ 1500: 4, 1200: 3, 768: 2, 500: 1 }}>
-              // {/* </MasonryLayout> */}
-              <div className="grid grid-cols-1 min-[540]:grid-cols-2 min-[800]:grid-cols-3 xl:grid-cols-4 gap-4">
-                {products.map((product) => (
+              <div className="grid grid-cols-1 min-[540px]:grid-cols-2 min-[800px]:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
               <div className="space-y-4 sm:space-y-6">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} listView />
                 ))}
               </div>
             )}
 
-            <div ref={observerRef} className="h-10 w-full mt-6 sm:mt-8" />
+            {/* Infinite Scroll Sentinel */}
+            {hasMore && (
+              <div
+                ref={observerRef}
+                className="h-10 w-full mt-6 sm:mt-8"
+                aria-hidden="true"
+              />
+            )}
 
+            {/* Loading */}
             {isLoading && (
               <div className="flex items-center justify-center py-8 sm:py-12">
                 <div className="flex items-center space-x-3">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600" />
+
                   <span className="text-gray-600 font-medium">
                     Loading more products...
                   </span>
@@ -266,12 +461,13 @@ export default function Products({
               </div>
             )}
 
-            {!isLoading && products.length >= productCount && (
+            {/* End of Products */}
+            {!isLoading && !hasMore && (
               <div className="text-center py-6 sm:py-12">
                 <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 sm:px-6 py-2 sm:py-3">
                   <span className="text-gray-600">
-                    <PartyPopper className="inline" /> You&apos;ve seen all
-                    products in this category!
+                    <PartyPopper className="inline mr-1" />
+                    You&apos;ve seen all products in this category!
                   </span>
                 </div>
               </div>

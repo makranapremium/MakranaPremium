@@ -13,12 +13,13 @@ export interface ProductType {
   id: string;
   name: string;
   slug: string;
+  description: string;
   categoryId: {
-    id: mongoose.Types.ObjectId,
-    name: string,
-    slug: string
+    id: mongoose.Types.ObjectId;
+    name: string;
+    slug: string;
   };
   imageUrl: string;
   createdAt: string;
-  updatedAt: string
+  updatedAt: string;
 }

@@ -47,6 +47,7 @@ export default function ProductCard({
           <ImageModal
             src={selectedImage || "/placeholder.svg"}
             alt={product.name}
+            description={product.description}
             onClose={() => setSelectedImage(null)}
           />
         )}
@@ -98,6 +99,7 @@ export default function ProductCard({
         <ImageModal
           src={selectedImage || "/placeholder.svg"}
           alt={product.name}
+          description={product.description}
           onClose={() => setSelectedImage(null)}
         />
       )}
@@ -110,10 +112,12 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 function ImageModal({
   src,
   alt,
+  description,
   onClose,
 }: {
   src: string;
   alt: string;
+  description: string;
   onClose: () => void;
 }) {
   return (
@@ -162,6 +166,9 @@ function ImageModal({
         {/* Title Overlay */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
           <h3 className="text-white text-xl font-bold capitalize">{alt}</h3>
+          <p className="text-white/40 text-sm font-bold capitalize max-w-xs text-wrap">
+            {description}
+          </p>
         </div>
       </div>
     </div>

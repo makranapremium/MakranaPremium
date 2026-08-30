@@ -114,5 +114,14 @@ export const navSections = [
       { name: "Granite", url: "/collections/granite" },
     ],
   },
+  {
+    name: "blog",
+    url: "/blog",
+    hasDropdown: true,
+    dropdownItems: [
+      { name: "Marble Slabs", url: "/blog/marble-slabs" },
+      { name: "Marble Articles", url: "/blog/marble-articles" },
+    ],
+  },
   { name: "contact us", url: "/contact" },
 ];

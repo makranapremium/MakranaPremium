@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,8 @@ import {
 } from "@/lib/api";
 import mongoose from "mongoose";
 import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { useRouter } from "next/navigation";
 
 export default function EditProductForm({
   productId,
@@ -28,8 +30,10 @@ export default function EditProductForm({
   productId: string;
   onProductUpdated: () => void;
 }) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -58,6 +62,7 @@ export default function EditProductForm({
 
       setName(product.name);
       setCategory(product.categoryId);
+      setDescription(product.description);
       setPreview(product.imageUrl);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -80,7 +85,8 @@ export default function EditProductForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !category) return alert("Please fill all fields");
+    if (!name || !category || !description)
+      return alert("Please fill all fields");
 
     setLoading(true);
     try {
@@ -96,13 +102,15 @@ export default function EditProductForm({
 
       const productData = {
         name,
+        description,
         categoryId: new mongoose.Types.ObjectId(category),
         imageUrl: imageUrl as string,
       };
 
       await updateProduct(new mongoose.Types.ObjectId(productId), productData);
-      onProductUpdated();
       toast.success("Product updated");
+      onProductUpdated();
+      router.push("/admin/products");
     } catch (error) {
       toast.error("Failed to update product");
       console.error(error);
@@ -119,7 +127,16 @@ export default function EditProductForm({
         onChange={(e) => setName(e.target.value)}
         placeholder="Product Name"
       />
-
+      <Textarea
+        placeholder="Product Description"
+        value={description}
+        className=""
+        maxLength={200}
+        onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+          setDescription(e.target.value)
+        }
+        required
+      />
       {/* Category Selection */}
       <Select value={category} onValueChange={setCategory}>
         <SelectTrigger className="w-full">
@@ -133,7 +150,6 @@ export default function EditProductForm({
           ))}
         </SelectContent>
       </Select>
-
       <Input
         id="productImage"
         type="file"
@@ -153,7 +169,6 @@ export default function EditProductForm({
           />
         </Label>
       )}
-
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Saving..." : "Save Changes"}
       </Button>

@@ -15,6 +15,7 @@ import {
 import { useEffect } from "react";
 import { addProduct, fetchCategories, uploadToCloudinary } from "@/lib/api";
 import { CategoryType } from "@/lib/types";
+import { Textarea } from "../ui/textarea";
 
 export default function AddProductForm({
   onProductAdded,
@@ -24,6 +25,7 @@ export default function AddProductForm({
   const router = useRouter();
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export default function AddProductForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !category || !image)
+    if (!name || !category || !image || !description)
       return toast.error("Please fill in all fields!");
     setLoading(true);
     setIsUploading(true);
@@ -70,6 +72,7 @@ export default function AddProductForm({
         name,
         categoryId: category,
         imageUrl,
+        description,
       });
 
       if (data.error) {
@@ -97,6 +100,16 @@ export default function AddProductForm({
         placeholder="Product Name"
         value={name}
         onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+        required
+      />
+      <Textarea
+        placeholder="Product Description"
+        value={description}
+        className=""
+        maxLength={200}
+        onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+          setDescription(e.target.value)
+        }
         required
       />
 

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Toaster } from "@/components/ui/sonner";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600"],
@@ -19,10 +20,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
 export const metadata: Metadata = {
   verification: {
-    google: "qPm6LNMecy8-8L1PfFsQKVZnIEnEsAAEDXDJZqiKiE4"
+    google: "qPm6LNMecy8-8L1PfFsQKVZnIEnEsAAEDXDJZqiKiE4",
   },
   metadataBase: new URL("https://makranapremium.com"),
   // metadataBase: new URL('http://localhost.com'),
@@ -108,6 +108,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1 flex flex-col">{children}</main>
         <Footer />
+        <Toaster />
       </body>
     </html>
   );

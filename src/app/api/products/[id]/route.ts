@@ -7,7 +7,7 @@ import slugify from "slugify";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
@@ -25,14 +25,14 @@ export async function GET(
         {
           message: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     } else {
       return NextResponse.json(
         {
           message: "Internal Server Error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -40,19 +40,19 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
 
     const { id: productId } = await params;
 
-    const { name, imageUrl, categoryId } = await req.json();
+    const { name, imageUrl, categoryId, description } = await req.json();
 
-    if (!name || !imageUrl || !categoryId) {
+    if (!name || !imageUrl || !categoryId || !description) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,6 +62,7 @@ export async function PUT(
       name: productName,
       slug,
       imageUrl,
+      description,
       categoryId,
     });
 
@@ -70,7 +71,7 @@ export async function PUT(
         product,
         message: "product updated successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof ApiError || error instanceof MongooseError) {
@@ -78,14 +79,14 @@ export async function PUT(
         {
           message: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     } else {
       return NextResponse.json(
         {
           message: "Internal Server Error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
@@ -93,7 +94,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
@@ -107,7 +108,7 @@ export async function DELETE(
         product,
         message: "product deleted successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof ApiError || error instanceof MongooseError) {
@@ -115,14 +116,14 @@ export async function DELETE(
         {
           message: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     } else {
       return NextResponse.json(
         {
           message: "Internal Server Error",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
