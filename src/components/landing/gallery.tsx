@@ -131,6 +131,7 @@ const ShopProducts = () => {
           </Link>
         </div>
       </div>
+      
     </section>
   );
 };
