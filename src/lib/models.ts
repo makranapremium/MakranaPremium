@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, models, model } from "mongoose";
 import { Model } from "mongoose";
 
 // Interface for Category
@@ -22,17 +22,6 @@ export interface IProduct extends Document {
 }
 
 // Interface for Blog
-export interface IBlog extends Document {
-  title: string;
-  featureImage: string;
-  mainContent: string;
-  secondImage: string;
-  otherContent: string;
-  slug: string;
-  category: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 const CategorySchema = new Schema<ICategory>(
   {
@@ -96,45 +85,6 @@ const ProductSchema = new Schema<IProduct>(
   },
 );
 
-const BlogSchema = new Schema<IBlog>(
-  {
-    title: { type: String, required: true },
-    featureImage: { type: String, required: true },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    mainContent: {
-      type: String,
-      required: true,
-    },
-    secondImage: {
-      type: String,
-    },
-    otherContent: {
-      type: String,
-    },
-  },
-  {
-    timestamps: true,
-    toJSON: {
-      virtuals: true,
-      transform: (_, ret) => {
-        const { _id, __v, ...blog } = ret;
-        return {
-          ...blog,
-          id: _id,
-        };
-      },
-    },
-  },
-);
-
 // Export models
 export const Category =
   mongoose.models.Category ||
@@ -142,9 +92,6 @@ export const Category =
 
 export const Product =
   mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
-
-export const Blog =
-  mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
 
 export interface IVisitor extends Document {
   visitorId: string;
@@ -160,3 +107,141 @@ const VisitorSchema = new Schema<IVisitor>({
 
 export const Visitor: Model<IVisitor> =
   mongoose.models.Visitor || mongoose.model<IVisitor>("Visitor", VisitorSchema);
+
+const TiptapMarkSchema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+    },
+
+    attrs: {
+      type: Schema.Types.Mixed,
+      default: undefined,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+const TiptapNodeSchema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+    },
+
+    attrs: {
+      type: Schema.Types.Mixed,
+      default: undefined,
+    },
+
+    text: {
+      type: String,
+      default: undefined,
+    },
+
+    marks: {
+      type: [TiptapMarkSchema],
+      default: undefined,
+    },
+
+    content: {
+      type: [Schema.Types.Mixed],
+      default: undefined,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+const TiptapContentSchema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+      enum: ["doc"],
+    },
+
+    content: {
+      type: [TiptapNodeSchema],
+      default: [],
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+const BlogSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
+
+    category: {
+      type: String,
+      required: true,
+      enum: ["marble-slab", "article"],
+      index: true,
+    },
+
+    featuredImage: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    publishedAt: {
+      type: Date,
+      default: Date.now,
+      index: true,
+    },
+
+    content: {
+      type: TiptapContentSchema,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+
+    toJSON: {
+      virtuals: true,
+      transform: (_, ret) => {
+        const { _id, __v, ...blog } = ret;
+        return {
+          ...blog,
+          id: _id.toString(),
+        };
+      },
+    },
+  },
+);
+
+/**
+ * Useful for:
+ *
+ * GET /api/blogs?category=marble-slab
+ *
+ * sorted by newest first.
+ */
+BlogSchema.index({
+  category: 1,
+  publishedAt: -1,
+});
+
+export const Blog = models.Blog || model("Blog", BlogSchema);

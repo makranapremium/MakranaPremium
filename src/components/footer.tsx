@@ -1,4 +1,11 @@
-import { Instagram, Mail, Phone, MapPin, ArrowRight, Heart } from "lucide-react";
+import {
+  Instagram,
+  Mail,
+  Phone,
+  MapPin,
+  ArrowRight,
+  Heart,
+} from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
@@ -14,7 +21,8 @@ const Footer = () => {
                 Makrana Premium
               </h3>
               <p className="mt-2 sm:mt-3 text-gray-300 text-sm sm:text-base leading-relaxed">
-                Exquisite marble craftsmanship blending tradition with luxury. Creating timeless beauty for your spaces.
+                Exquisite marble craftsmanship blending tradition with luxury.
+                Creating timeless beauty for your spaces.
               </p>
             </div>
 
@@ -22,7 +30,10 @@ const Footer = () => {
             <div className="space-y-3 text-sm sm:text-base">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
-                <a href="tel:+917976973338" className="text-gray-300 hover:text-white transition-colors">
+                <a
+                  href="tel:+917976973338"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
                   +91 79769 73338
                 </a>
               </div>
@@ -48,14 +59,17 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6">Quick Links</h4>
+            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6">
+              Quick Links
+            </h4>
             <ul className="space-y-2 sm:space-y-3">
               {[
                 { name: "Home", href: "/" },
                 { name: "About Us", href: "/#about" },
                 { name: "Collections", href: "/collections" },
-                { name: "Contact", href: "/contact" },
                 { name: "Gallery", href: "/gallery" },
+                { name: "Contact", href: "/contact" },
+                { name: "Privacy Policy", href: "/privacy-policy" },
               ].map((link) => (
                 <li key={link.name}>
                   <Link
@@ -72,7 +86,9 @@ const Footer = () => {
 
           {/* Services & Social */}
           <div>
-            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6">Our Services</h4>
+            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6">
+              Our Services
+            </h4>
             <ul className="space-y-2 sm:space-y-3 mb-6">
               {[
                 "Custom Marble Cutting",
@@ -92,7 +108,9 @@ const Footer = () => {
 
             {/* Social Media */}
             <div>
-              <h5 className="text-sm sm:text-lg font-medium text-white mb-2 sm:mb-4">Follow Us</h5>
+              <h5 className="text-sm sm:text-lg font-medium text-white mb-2 sm:mb-4">
+                Follow Us
+              </h5>
               <div className="flex space-x-3 sm:space-x-4">
                 <a
                   href="https://www.instagram.com/makranapremiummarble?igsh=OXk0YTR6NDdhczM1"

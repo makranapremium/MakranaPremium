@@ -1,29 +1,26 @@
-import { getCategory, getCategoryBySlug } from "@/lib/actions";
-import { getProducts } from "@/lib/actions";
-import Products from "@/components/products";
-import mongoose from "mongoose";
-import { Metadata } from "next";
-import React from "react";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { BLOG_CATEGORIES, BlogRouteCategory } from "@/lib/types";
+import { getBlogsByCategory } from "@/lib/actions";
+import BlogCategory from "@/components/blog-category";
 
-type PageProps = {
-  ctg: string;
-};
+// import BlogCategory from "@/components/blog/blog-category";
+// import { BLOG_CATEGORIES, type BlogRouteCategory } from "@/lib/blog";
 
-export const generateMetadata = async ({
+interface PageProps {
+  params: Promise<{
+    category: string;
+  }>;
+}
+
+export async function generateMetadata({
   params,
-}: {
-  params: Promise<PageProps>;
-}): Promise<Metadata> => {
-  const { ctg } = await params;
+}: PageProps): Promise<Metadata> {
+  const { category } = await params;
 
-  const category = await getCategoryBySlug(ctg);
-
-  // Handle invalid / bogus category slug
-  if (!category) {
+  if (!(category in BLOG_CATEGORIES)) {
     return {
-      title: "Category Not Found",
-      description: "The category you're looking for does not exist.",
+      title: "Blog Category Not Found",
       robots: {
         index: false,
         follow: false,
@@ -31,50 +28,38 @@ export const generateMetadata = async ({
     };
   }
 
-  const formattedCategory = category.name
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const categoryInfo = BLOG_CATEGORIES[category as BlogRouteCategory];
 
   return {
-    title: `${formattedCategory} - Buy the Best Products Online`,
-    description: `Explore top-quality ${formattedCategory} at unbeatable prices. Shop now and enjoy fast delivery!`,
-    keywords: [
-      `${formattedCategory} online`,
-      `best ${formattedCategory}`,
-      `buy ${formattedCategory}`,
-    ],
-    openGraph: {
-      title: `${formattedCategory} - Shop Now`,
-      description: `Find the best deals on ${formattedCategory}. Wide selection and great prices!`,
-      images: category.imageUrl ? [{ url: category.imageUrl }] : undefined,
-      url: `${process.env.BASE_URL}/categories/${ctg}`,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${formattedCategory} - Best Deals Online`,
-      description: `Looking for ${formattedCategory}? Check out our latest collection at amazing prices!`,
-    },
+    title: `${categoryInfo.title} | Marble Premium`,
+    description: categoryInfo.description,
   };
-};
+}
 
-const Page = async ({ params }: { params: Promise<PageProps> }) => {
-  const { ctg } = await params;
-  // await new Promise((resolve) => setTimeout(resolve, 3000));
-  const category = await getCategoryBySlug(ctg);
+export default async function BlogCategoryPage({ params }: PageProps) {
+  const { category } = await params;
 
-  if (!category) {
+  if (!(category in BLOG_CATEGORIES)) {
     notFound();
   }
-  const { products, productCount } = await getProducts(category.id);
+
+  const blogCategory = BLOG_CATEGORIES[category as BlogRouteCategory];
+
+  /*
+   * Initial server-side load.
+   *
+   * This is NOT calling /api/blogs.
+   * It queries MongoDB directly.
+   */
+  const response = await getBlogsByCategory(blogCategory.dbCategory, 1, 12);
 
   return (
-    <Products
-      categoryId={category.id.toString()}
-      initialProducts={products}
-      productCount={productCount}
+    <BlogCategory
+      category={category as BlogRouteCategory}
+      categoryInfo={blogCategory}
+      initialBlogs={response.blogs}
+      total={response.total}
+      hasMore={response.hasMore}
     />
   );
-};
-
-export default Page;
+}

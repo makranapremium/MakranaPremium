@@ -115,12 +115,12 @@ export const navSections = [
     ],
   },
   {
-    name: "blog",
-    url: "/blog",
+    name: "blogs",
+    url: "/blogs",
     hasDropdown: true,
     dropdownItems: [
-      { name: "Marble Slabs", url: "/blog/marble-slabs" },
-      { name: "Marble Articles", url: "/blog/marble-articles" },
+      { name: "Marble Slabs", url: "/blogs/marble-slabs" },
+      { name: "Marble Articles", url: "/blogs/marble-articles" },
     ],
   },
   { name: "contact us", url: "/contact" },
