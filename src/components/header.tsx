@@ -129,7 +129,7 @@ export default function Header() {
       (sectionName === "about" && pathname === "/about") ||
       (sectionName === "collections" &&
         pathname.startsWith("/collections")) ||
-      (sectionName === "blog" && pathname.startsWith("/blog")) ||
+      (sectionName === "blogs" && pathname.startsWith("/blogs")) ||
       (sectionName === "contact us" && pathname === "/contact")
     );
   };
@@ -199,22 +199,6 @@ export default function Header() {
                 section.url
               );
 
-              /*
-               * IMPORTANT:
-               *
-               * Only this section is open.
-               *
-               * Example:
-               * openDropdown === "collections"
-               *
-               * means Collections is open.
-               *
-               * Blog will remain closed because:
-               *
-               * openDropdown === "blog"
-               *
-               * is false.
-               */
               const isDropdownOpen =
                 openDropdown === section.name;
 

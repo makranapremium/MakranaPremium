@@ -1,15 +1,15 @@
-import Link from "next/link"
-import { ArrowLeft, CheckCircle2, ShieldCheck } from "lucide-react"
+import Link from "next/link";
+import { ArrowLeft, CheckCircle2, ShieldCheck } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata = {
   title: "Privacy Policy | Makrana Premium",
   description:
     "Privacy Policy for Makrana Premium — marble articles and handicrafts from Makrana, Rajasthan.",
-}
+};
 
 const sections = [
   {
@@ -22,9 +22,9 @@ const sections = [
         </h3>
 
         <p className="mb-5">
-          When you contact us through WhatsApp, phone, or email to enquire
-          about a product, request a quotation, or place an order, you may
-          voluntarily provide information such as:
+          When you contact us through WhatsApp, phone, or email to enquire about
+          a product, request a quotation, or place an order, you may voluntarily
+          provide information such as:
         </p>
 
         <ul className="mb-8 grid gap-3 sm:grid-cols-2">
@@ -46,9 +46,9 @@ const sections = [
         </ul>
 
         <p className="mb-8">
-          We do not collect this information through a customer registration
-          or enquiry form on our website. The information is provided directly
-          by you when you contact us through WhatsApp, phone, or email.
+          We do not collect this information through a customer registration or
+          enquiry form on our website. The information is provided directly by
+          you when you contact us through WhatsApp, phone, or email.
         </p>
 
         <h3 className="mb-3 text-lg font-semibold text-foreground">
@@ -58,9 +58,9 @@ const sections = [
         <p>
           Our website may receive basic technical information such as your IP
           address, browser type, operating system, device type, and similar
-          technical information. This information may be automatically
-          processed by our website hosting or infrastructure providers for
-          purposes such as website security, reliability, and performance.
+          technical information. This information may be automatically processed
+          by our website hosting or infrastructure providers for purposes such
+          as website security, reliability, and performance.
         </p>
       </>
     ),
@@ -72,8 +72,8 @@ const sections = [
       <p>
         When you choose to contact us through WhatsApp, your conversation takes
         place on WhatsApp&apos;s platform and is also subject to WhatsApp&apos;s
-        own Privacy Policy and terms. We only have access to the information
-        and messages that you choose to send to us through WhatsApp. We do not
+        own Privacy Policy and terms. We only have access to the information and
+        messages that you choose to send to us through WhatsApp. We do not
         control how WhatsApp processes information on its platform.
       </p>
     ),
@@ -96,8 +96,8 @@ const sections = [
 
         <p>
           Our hosting or website infrastructure may use basic technical
-          mechanisms that are necessary for website security, functionality,
-          and performance.
+          mechanisms that are necessary for website security, functionality, and
+          performance.
         </p>
       </>
     ),
@@ -140,9 +140,8 @@ const sections = [
         </ul>
 
         <p className="mt-6">
-          We do not use your personal information for purposes unrelated to
-          the above without a lawful basis or appropriate notice where
-          required.
+          We do not use your personal information for purposes unrelated to the
+          above without a lawful basis or appropriate notice where required.
         </p>
       </>
     ),
@@ -156,7 +155,9 @@ const sections = [
           We do not sell or rent your personal information to third parties.
         </p>
 
-        <p className="mb-5">We may share information where reasonably necessary with:</p>
+        <p className="mb-5">
+          We may share information where reasonably necessary with:
+        </p>
 
         <ul className="grid gap-3">
           {[
@@ -173,9 +174,9 @@ const sections = [
         </ul>
 
         <p className="mt-6">
-          We expect service providers handling information on our behalf to
-          use it only for the purposes for which it is provided or as
-          otherwise permitted by applicable law.
+          We expect service providers handling information on our behalf to use
+          it only for the purposes for which it is provided or as otherwise
+          permitted by applicable law.
         </p>
       </>
     ),
@@ -186,8 +187,8 @@ const sections = [
     content: (
       <>
         <p className="mb-5">
-          We retain information you provide for as long as reasonably
-          necessary to:
+          We retain information you provide for as long as reasonably necessary
+          to:
         </p>
 
         <ul className="grid gap-3">
@@ -205,8 +206,8 @@ const sections = [
         </ul>
 
         <p className="mt-6">
-          Where appropriate and legally permissible, you may request deletion
-          of your personal information.
+          Where appropriate and legally permissible, you may request deletion of
+          your personal information.
         </p>
       </>
     ),
@@ -248,8 +249,8 @@ const sections = [
         We take reasonable measures to protect the information provided to us
         from unauthorized access, misuse, loss, or disclosure. However, no
         method of transmission over the internet or electronic storage is
-        completely secure. Therefore, we cannot guarantee absolute security
-        of information.
+        completely secure. Therefore, we cannot guarantee absolute security of
+        information.
       </p>
     ),
   },
@@ -285,7 +286,8 @@ const sections = [
             <p>
               <span className="font-medium text-stone-900">Email:</span>{" "}
               <a
-                href="mailto:abdulriyaz1009@gmail.com"
+                href="mailto:abdulriyaz1009+resend@gmail.com"
+                // href="mailto:aiomicrosoftaccout563+makranapremium@gmail.com"
                 className="transition-colors hover:text-stone-900"
               >
                 abdulriyaz1009@gmail.com
@@ -313,9 +315,9 @@ const sections = [
     title: "Children's Privacy",
     content: (
       <p>
-        Our website and products are intended for adults and are not directed
-        at children under 18. We do not knowingly collect personal information
-        from children.
+        Our website and products are intended for adults and are not directed at
+        children under 18. We do not knowingly collect personal information from
+        children.
       </p>
     ),
   },
@@ -325,37 +327,17 @@ const sections = [
     content: (
       <p>
         We may update this Privacy Policy from time to time if our website,
-        business practices, or applicable legal requirements change. Any
-        updated version will be published on this page with a revised
-        &quot;Last updated&quot; date.
+        business practices, or applicable legal requirements change. Any updated
+        version will be published on this page with a revised &quot;Last
+        updated&quot; date.
       </p>
     ),
   },
-]
+];
 
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-[#faf9f7] text-stone-700">
-      {/* Header */}
-      <header className="border-b border-stone-200/80 bg-[#faf9f7]/95">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-2 text-sm font-medium text-stone-600 transition-colors hover:text-stone-950"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to website
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-stone-800" />
-            <span className="hidden text-sm font-semibold tracking-wide text-stone-900 sm:inline">
-              Makrana Premium
-            </span>
-          </div>
-        </div>
-      </header>
-
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-stone-200/80">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
@@ -373,8 +355,8 @@ export default function PrivacyPolicyPage() {
 
             <p className="mt-6 max-w-2xl text-base leading-7 text-stone-600 sm:text-lg">
               Your privacy matters to us. This policy explains how Makrana
-              Premium handles information when you visit our website or
-              contact us about our marble articles and handicrafts.
+              Premium handles information when you visit our website or contact
+              us about our marble articles and handicrafts.
             </p>
 
             <div className="mt-8 flex items-center gap-3 text-sm text-stone-500">
@@ -450,22 +432,6 @@ export default function PrivacyPolicyPage() {
           ))}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-stone-200 bg-stone-950 text-stone-300">
-        <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-10 sm:px-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="font-serif text-lg text-white">Makrana Premium</p>
-            <p className="mt-1 text-sm text-stone-500">
-              Premium marble articles & handicrafts from Makrana, Rajasthan.
-            </p>
-          </div>
-
-          <div className="text-sm text-stone-500">
-            © {new Date().getFullYear()} Makrana Premium. All rights reserved.
-          </div>
-        </div>
-      </footer>
     </main>
-  )
+  );
 }
