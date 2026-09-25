@@ -2,8 +2,8 @@
 
 import { apiDefaults } from "@/lib/constant";
 import { connectDB } from "@/lib/db";
-import { Product } from "@/lib/models";
-import type { ProductType } from "@/lib/types";
+import { Blog, Product } from "@/lib/models";
+import type { IBlog, ProductType } from "@/lib/types";
 import mongoose, { SortOrder } from "mongoose";
 import { Category } from "@/lib/models";
 import { CategoryType } from "@/lib/types";
@@ -81,13 +81,21 @@ export async function getCategories(
 }
 
 export async function getCategory(
-  categoryId: mongoose.Types.ObjectId,
-): Promise<CategoryType> {
+  categoryId: string,
+): Promise<CategoryType | null> {
   await connectDB();
-  const category = JSON.parse(
-    JSON.stringify(await Category.findById(categoryId)),
-  );
-  return category;
+
+  if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    return null;
+  }
+
+  const category = await Category.findById(categoryId).lean();
+
+  if (!category) {
+    return null;
+  }
+
+  return JSON.parse(JSON.stringify(category));
 }
 
 export async function getCategoryBySlug(
@@ -98,4 +106,68 @@ export async function getCategoryBySlug(
     JSON.stringify(await Category.findOne({ slug: categorySlug })),
   );
   return category;
+}
+
+export async function getBlogsByCategory(
+  category: "marble-slab" | "article",
+  page = 1,
+  limit = 12,
+) {
+  await connectDB();
+
+  const skip = (page - 1) * limit;
+
+  const [blogs, total] = await Promise.all([
+    Blog.find({ category })
+      .sort({ publishedAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+
+    Blog.countDocuments({ category }),
+  ]);
+
+  return {
+    blogs: blogs.map((blog) => ({
+      id: (blog._id as mongoose.Types.ObjectId).toString(),
+      title: blog.title,
+      slug: blog.slug,
+      category: blog.category,
+      featuredImage: blog.featuredImage,
+      publishedAt: blog.publishedAt.toISOString(),
+      updatedAt: blog.updatedAt?.toISOString(),
+    })),
+    total,
+    page,
+    limit,
+    hasMore: skip + blogs.length < total,
+  };
+}
+
+export async function getBlogCategoryBySlug(
+  categorySlug: string,
+): Promise<CategoryType> {
+  await connectDB();
+  const category = JSON.parse(
+    JSON.stringify(await Blog.findOne({ slug: categorySlug })),
+  );
+  return category;
+}
+
+export async function getBlogBySlug(slug: string): Promise<IBlog | null> {
+  await connectDB();
+
+  const blog = JSON.parse(
+    JSON.stringify(
+      await Blog.findOne({
+        slug: slug.toLowerCase(),
+      }).lean(),
+    ),
+  );
+
+  if (!blog) {
+    return null;
+  }
+
+  return blog;
 }

@@ -4,7 +4,7 @@ import Products from "@/components/products";
 import mongoose from "mongoose";
 import { Metadata } from "next";
 import React from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 // import BlogCategory from "@/components/blog/blog-category";
 // import { BLOG_CATEGORIES, type BlogRouteCategory } from "@/lib/blog";
@@ -64,6 +64,16 @@ export default async function CategoryPage({ params }: PageProps) {
   const { ctg } = await params;
   // await new Promise((resolve) => setTimeout(resolve, 3000));
   const category = await getCategoryBySlug(ctg);
+
+  // If not found, check whether it's an old collection ID
+  if (!category) {
+
+    const categoryById = await getCategory(ctg);  
+
+    if (categoryById) {
+      redirect(`/collections/${categoryById.slug}`);
+    }
+  }
 
   if (!category) {
     notFound();
