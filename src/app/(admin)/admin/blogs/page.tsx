@@ -95,9 +95,7 @@ export default function BlogsPage() {
       if (!response.ok) {
         throw new Error("Failed to fetch blogs");
       }
-
       const data = await response.json();
-
       setBlogs(data.blogs ?? []);
     } catch (error) {
       console.error("Failed to load blogs:", error);
@@ -127,18 +125,32 @@ export default function BlogsPage() {
    * ============================================================
    */
 
-  const handleEditBlog = (blog: Blog) => {
+  const handleEditBlog = async (blog: Blog) => {
     setEditingBlogId(blog.id);
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/blogs/${blog.id}`);
 
-    setFormData({
-      title: blog.title,
-      slug: blog.slug,
-      category: blog.category,
-      featuredImage: blog.featuredImage,
-      content: blog.content,
-    });
+      if (!response.ok) {
+        throw new Error("Failed to fetch blogs");
+      }
+      const data = await response.json();
 
-    setIsEditorOpen(true);
+      if (data) {
+        setFormData({
+          title: data.title,
+          slug: data.slug,
+          category: data.category,
+          featuredImage: data.featuredImage,
+          content: data.content,
+        });
+        setIsEditorOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to load blogs:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   /**
@@ -165,9 +177,14 @@ export default function BlogsPage() {
     setFormData((previous) => ({
       ...previous,
       title,
+    }));
+  };
 
+  const handleSlugChange = (slug: string) => {
+    setFormData((previous) => ({
+      ...previous,
       ...{
-        slug: title
+        slug: slug
           .toLowerCase()
           .trim()
           .replace(/[^a-z0-9\s-]/g, "")
@@ -490,7 +507,8 @@ export default function BlogsPage() {
                     <Input
                       id="blog-slug"
                       value={formData.slug}
-                      disabled
+                      // disabled
+                      onChange={(event) => handleSlugChange(event.target.value)}
                       placeholder="your-blog-slug"
                       className="h-12 border-gray-200 bg-gray-50"
                     />
