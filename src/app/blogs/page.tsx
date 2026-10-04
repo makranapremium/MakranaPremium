@@ -34,7 +34,7 @@ export default function BlogPage() {
         <div className="grid gap-6 md:grid-cols-2">
           {/* Marble Slab */}
           <Link
-            href="/blog/marble-slab"
+            href="/blogs/marble-slabs"
             className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-10"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-600 text-white">
@@ -59,7 +59,7 @@ export default function BlogPage() {
 
           {/* Articles */}
           <Link
-            href="/blog/article"
+            href="/blogs/marble-articles"
             className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-10"
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gray-900 text-white">
