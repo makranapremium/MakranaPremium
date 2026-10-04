@@ -20,7 +20,6 @@ const page = () => {
       <Process />
       <Testimonials />
       <ContactUs />
-      <WhatsAppContact />
     </>
   );
 };

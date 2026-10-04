@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
+import WhatsAppContact from "@/components/utils/whatsapp";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600"],
@@ -107,6 +108,8 @@ export default function RootLayout({
       >
         <Header />
         <main className="flex-1 flex flex-col">{children}</main>
+
+        <WhatsAppContact />
         <Footer />
         <Toaster />
       </body>
