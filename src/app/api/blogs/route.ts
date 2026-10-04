@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { title, category, featuredImage, content } = body;
+    const { title, slug, category, featuredImage, content } = body;
 
     // Basic validation
     if (!title?.trim()) {
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const finalSlug = slugify(title);
+    const finalSlug = slugify(slug);
 
     // Check duplicate slug
     const existingBlog = await Blog.findOne({

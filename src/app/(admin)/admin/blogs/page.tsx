@@ -128,7 +128,6 @@ export default function BlogsPage() {
    */
 
   const handleEditBlog = (blog: Blog) => {
-    console.log(blog);
     setEditingBlogId(blog.id);
 
     setFormData({
@@ -300,7 +299,6 @@ export default function BlogsPage() {
        * ============================================================
        */
 
-      console.log(editingBlogId);
       if (editingBlogId) {
         const data = await updateBlog(editingBlogId, blogData);
 
@@ -318,7 +316,6 @@ export default function BlogsPage() {
          * ============================================================
          */
         const data = await createBlog(blogData);
-
         setBlogs((previousBlogs) => [data.blog, ...previousBlogs]);
 
         toast.success("Blog post created successfully.");

@@ -49,8 +49,6 @@ export async function POST(req: NextRequest) {
     await connectDB();
     const { name, imageUrl, categoryId, description } = await req.json();
 
-    console.log(description)
-
     if (!name || !imageUrl || !categoryId || !description) {
       return NextResponse.json(
         { error: "Missing required fields" },

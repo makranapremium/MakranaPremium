@@ -156,7 +156,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     return NextResponse.json(
       {
         message: "Blog updated successfully.",
-        blog,
+        blog: { id, ...blog },
       },
       { status: 200 },
     );
