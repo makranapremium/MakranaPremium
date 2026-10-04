@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import { CategoryType } from "./types";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+import { CategoryType, IBlog } from "./types";
 
 type ProductData = {
   name: string;
@@ -133,5 +132,113 @@ export async function deleteCategory(categoryId: mongoose.Types.ObjectId) {
     method: "DELETE",
   });
   if (!res.ok) throw new Error("Failed to delete category");
+  return res.json();
+}
+
+export async function fetchBlogs(
+  category?: string,
+  page = 1,
+  limit = 12,
+) {
+  const params = new URLSearchParams();
+
+  if (category) {
+    params.set("category", category);
+  }
+
+  params.set("page", page.toString());
+  params.set("limit", limit.toString());
+
+  const res = await fetch(`/api/blogs?${params.toString()}`);
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+
+    throw new Error(
+      data?.message || "Failed to fetch blogs",
+    );
+  }
+
+  return res.json();
+}
+
+export async function fetchBlogById(id: string) {
+  const res = await fetch(`/api/blogs/${id}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch blog");
+  }
+
+  const data = await res.json();
+
+  return data.blog as IBlog;
+}
+
+export async function createBlog(blogData: {
+  title: string;
+  slug: string;
+  category: "marble-slab" | "article";
+  featuredImage: string;
+  content: Record<string, unknown>;
+  publishedAt?: string;
+}) {
+  const res = await fetch("/api/blogs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(blogData),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+
+    throw new Error(data?.message || "Failed to create blog");
+  }
+
+  return res.json();
+}
+
+export async function updateBlog(
+  id: string,
+  blogData: {
+    title: string;
+    slug: string;
+    category: "marble-slab" | "article";
+    featuredImage: string;
+    content: Record<string, unknown>;
+    publishedAt?: string;
+  },
+) {
+  const res = await fetch(`/api/blogs/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(blogData),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+
+    throw new Error(data?.message || "Failed to update blog");
+  }
+
+  return res.json();
+}
+
+export async function deleteBlog(id: string) {
+  const res = await fetch(`/api/blogs/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+
+    throw new Error(data?.message || "Failed to delete blog");
+  }
+
   return res.json();
 }

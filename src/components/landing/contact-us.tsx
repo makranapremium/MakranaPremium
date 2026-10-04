@@ -40,7 +40,7 @@ const ContactUs = () => {
       icon: Phone,
       title: "Call Us",
       content: (
-        <a
+        <a 
           href="tel:+917976973338"
           className="text-gray-600 transition-colors hover:text-amber-600"
         >
