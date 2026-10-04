@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 
     const body = await request.json();
 
-    const { title, category, featuredImage, publishedAt, content } = body;
+    const { title, slug, category, featuredImage, publishedAt, content } = body;
 
     // Basic validation
     if (!title || !category || !featuredImage || !content) {
@@ -112,10 +112,10 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const slug = slugify(title);
+    const finalSlug = slugify(slug);
     // Check slug belongs to another blog
     const existingBlog = await Blog.findOne({
-      slug,
+      slug: finalSlug,
       _id: { $ne: id },
     });
 
@@ -132,7 +132,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       id,
       {
         title,
-        slug,
+        slug: finalSlug,
         category,
         featuredImage,
         ...(publishedAt ? { publishedAt: new Date(publishedAt) } : {}),
