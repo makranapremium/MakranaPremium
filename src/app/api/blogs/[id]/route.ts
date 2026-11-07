@@ -82,10 +82,10 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 
     const body = await request.json();
 
-    const { title, slug, category, featuredImage, publishedAt, content } = body;
+    const { title, slug, category, featuredImage, publishedAt, content, seo } = body;
 
     // Basic validation
-    if (!title || !category || !featuredImage || !content) {
+    if (!title || !category || !featuredImage || !content || !seo) {
       return NextResponse.json(
         {
           message: "Title, category, featured image, and content are required.",
@@ -135,6 +135,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
         slug: finalSlug,
         category,
         featuredImage,
+        seo,
         ...(publishedAt ? { publishedAt: new Date(publishedAt) } : {}),
         content,
       },

@@ -88,12 +88,24 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { title, slug, category, featuredImage, content } = body;
+    const { title, slug, category, featuredImage, content, seo } = body;
 
     // Basic validation
     if (!title?.trim()) {
       return NextResponse.json(
         { message: "Title is required" },
+        { status: 400 },
+      );
+    }
+    if (!seo.metaTitle?.trim()) {
+      return NextResponse.json(
+        { message: "Meta Title is required" },
+        { status: 400 },
+      );
+    }
+    if (!seo.metaDescription?.trim()) {
+      return NextResponse.json(
+        { message: "Meta Description is required" },
         { status: 400 },
       );
     }
@@ -139,6 +151,7 @@ export async function POST(request: NextRequest) {
       title: title.trim(),
       slug: finalSlug,
       category,
+      seo,
       featuredImage,
       content,
       publishedAt: new Date(),
@@ -153,6 +166,7 @@ export async function POST(request: NextRequest) {
           slug: blog.slug,
           category: blog.category,
           featuredImage: blog.featuredImage,
+          seo: blog.seo,
           publishedAt: blog.publishedAt,
           content: blog.content,
           createdAt: blog.createdAt,

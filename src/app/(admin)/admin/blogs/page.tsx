@@ -41,6 +41,10 @@ interface Blog {
   category: BlogCategory;
   featuredImage: string;
   publishedAt: string;
+  seo: {
+    metaTitle: "";
+    metaDescription: "";
+  };
   content: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
@@ -50,6 +54,10 @@ interface BlogFormData {
   title: string;
   slug: string;
   category: BlogCategory;
+  seo: {
+    metaTitle: string;
+    metaDescription: string;
+  };
   featuredImage: string;
   content: Record<string, unknown>;
 }
@@ -59,6 +67,10 @@ const createEmptyForm = (): BlogFormData => ({
   slug: "",
   category: "marble-slab",
   featuredImage: "",
+  seo: {
+    metaTitle: "",
+    metaDescription: "",
+  },
   content: {
     type: "doc",
     content: [],
@@ -124,6 +136,7 @@ export default function BlogsPage() {
           title: data.title,
           slug: data.slug,
           category: data.category,
+          seo: data.seo,
           featuredImage: data.featuredImage,
           content: data.content,
         });
@@ -161,6 +174,20 @@ export default function BlogsPage() {
           .replace(/[^a-z0-9\s-]/g, "")
           .replace(/\s+/g, "-")
           .replace(/-+/g, "-"),
+      },
+    }));
+  };
+
+  const handleSeoChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = event.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      seo: {
+        ...prev.seo,
+        [name]: value,
       },
     }));
   };
@@ -226,6 +253,14 @@ export default function BlogsPage() {
       toast.warning("Please enter a blog title.");
       return;
     }
+    if (!formData.seo.metaTitle.trim()) {
+      toast.warning("Please enter a blog meta title.");
+      return;
+    }
+    if (!formData.seo.metaDescription.trim()) {
+      toast.warning("Please enter a blog meta description.");
+      return;
+    }
 
     if (!formData.slug.trim()) {
       toast.warning("Please enter a blog slug.");
@@ -244,6 +279,7 @@ export default function BlogsPage() {
         title: formData.title.trim(),
         slug: formData.slug.trim(),
         category: formData.category,
+        seo: formData.seo,
         featuredImage: formData.featuredImage,
         content: formData.content,
       };
@@ -392,6 +428,39 @@ export default function BlogsPage() {
                     value={formData.title}
                     onChange={(event) => handleTitleChange(event.target.value)}
                     placeholder="Enter blog title"
+                    className="h-12 border-gray-200 bg-gray-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="blog-meta-title"
+                    className="text-sm font-medium text-gray-800"
+                  >
+                    Meta Title
+                  </label>
+                  <Input
+                    id="blog-meta-title"
+                    value={formData.seo.metaTitle}
+                    name= "metaTitle"
+                    onChange={handleSeoChange}
+                    placeholder="Enter meta title"
+                    className="h-12 border-gray-200 bg-gray-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="blog-meta-description"
+                    className="text-sm font-medium text-gray-800"
+                  >
+                    Meta Description
+                  </label>
+
+                  <Input
+                    id="blog-title"
+                    name= "metaDescription"
+                    value={formData.seo.metaDescription}
+                    onChange={handleSeoChange}
+                    placeholder="Enter meta description"
                     className="h-12 border-gray-200 bg-gray-50"
                   />
                 </div>

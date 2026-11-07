@@ -35,8 +35,9 @@ export async function generateMetadata({
   const canonicalUrl = `https://www.makranapremium.com/blogs/post/${slug}`;
 
   return {
-    title: `${blog.title} | Makrana Premium`,
-    description,
+    // title: `${blog.title} | Makrana Premium`,
+    title: `${blog.seo?.metaTitle} | Makrana Premium`,
+    description: blog.seo?.metaDescription || description,
     keywords: [
       blog.title,
       "Makrana marble",

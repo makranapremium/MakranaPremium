@@ -83,6 +83,9 @@ export const metadata: Metadata = {
       follow: true,
     },
   },
+  alternates: {
+    canonical: "https://makranapremium.com/"
+  },
   openGraph: {
     title: "Makrana Premium - Marble Handicrafts and Makrana Marble",
     description:

@@ -175,6 +175,8 @@ const TiptapContentSchema = new Schema(
   },
 );
 
+
+
 const BlogSchema = new Schema(
   {
     title: {
@@ -182,7 +184,6 @@ const BlogSchema = new Schema(
       required: true,
       trim: true,
     },
-
     slug: {
       type: String,
       required: true,
@@ -210,7 +211,20 @@ const BlogSchema = new Schema(
       default: Date.now,
       index: true,
     },
-
+    seo: {
+      metaTitle: {
+        type: String,
+        trim: true,
+        maxlength: 70,
+        default: "",
+      },
+      metaDescription: {
+        type: String,
+        trim: true,
+        maxlength: 160,
+        default: "",
+      },
+    },
     content: {
       type: TiptapContentSchema,
       required: true,

@@ -47,6 +47,10 @@ export interface TiptapContent {
   content: TiptapNode[];
 }
 
+export interface IBlogSEO {
+  metaTitle?: string;
+  metaDescription?: string;
+}
 /**
  * Blog document
  */
@@ -56,6 +60,7 @@ export interface IBlog {
   slug: string;
   category: BlogCategory;
   featuredImage: string;
+  seo?: IBlogSEO;
   publishedAt: Date;
   content: TiptapContent;
   createdAt: Date;
