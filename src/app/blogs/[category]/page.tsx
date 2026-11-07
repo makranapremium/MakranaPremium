@@ -29,9 +29,36 @@ export async function generateMetadata({
   const categoryInfo =
     BLOG_CATEGORIES[category as BlogRouteCategory];
 
+  const url = `https://www.makranapremium.com/blogs/${category}`;
+
   return {
-    title: `${categoryInfo.title} | Marble Premium`,
+    // The root layout template already adds "Makrana Premium - ".
+    title: `${categoryInfo.title} - Makrana Marble Guides & Articles`,
     description: categoryInfo.description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: `${categoryInfo.title} | Makrana Premium`,
+      description: categoryInfo.description,
+      url,
+      siteName: "Makrana Premium",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${categoryInfo.title} | Makrana Premium`,
+      description: categoryInfo.description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+      },
+    },
   };
 }
 

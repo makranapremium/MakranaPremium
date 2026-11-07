@@ -6,11 +6,46 @@ import { ArrowLeft, CalendarDays } from "lucide-react";
 
 import BlogContent from "@/components/blog/blog-content";
 import { getBlogBySlug } from "@/lib/actions";
+import type { TiptapContent, TiptapNode } from "@/lib/types";
+
+const SITE_URL = "https://www.makranapremium.com";
 
 interface PageProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+/**
+ * Collects the plain text of a Tiptap node (and its children).
+ */
+function nodeText(node: TiptapNode): string {
+  if (typeof node.text === "string") return node.text;
+  return (node.content ?? []).map(nodeText).join("");
+}
+
+/**
+ * Builds a unique meta description from the first paragraphs of a post.
+ * Returns "" when no usable text is found, so callers can fall back.
+ */
+function getExcerpt(content?: TiptapContent, maxLength = 155): string {
+  const paragraphs = (content?.content ?? []).filter(
+    (node) => node.type === "paragraph",
+  );
+
+  let text = "";
+  for (const paragraph of paragraphs) {
+    const value = nodeText(paragraph).replace(/\s+/g, " ").trim();
+    if (!value) continue;
+    text = text ? `${text} ${value}` : value;
+    if (text.length >= 120) break;
+  }
+
+  if (text.length <= maxLength) return text;
+
+  const cut = text.slice(0, maxLength - 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > 80 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
 }
 
 export async function generateMetadata({
@@ -21,7 +56,7 @@ export async function generateMetadata({
 
   if (!blog) {
     return {
-      title: "Blog Post Not Found | Makrana Premium",
+      title: { absolute: "Blog Post Not Found | Makrana Premium" },
       description: "The requested Makrana marble article could not be found.",
       robots: {
         index: false,
@@ -30,12 +65,17 @@ export async function generateMetadata({
     };
   }
 
-  const description = `${blog.title}. Discover expert insights, detailed guides, design inspiration, and useful information about Makrana marble, marble slabs, and handcrafted marble products.`;
+  const description =
+    getExcerpt(blog.content) ||
+    `${blog.title}. Discover expert insights, detailed guides, design inspiration, and useful information about Makrana marble, marble slabs, and handcrafted marble products.`;
 
-  const canonicalUrl = `https://www.makranapremium.com/blogs/post/${slug}`;
+  // Use the stored (lowercase) slug so URL case variants share one canonical.
+  const canonicalUrl = `${SITE_URL}/blogs/post/${blog.slug}`;
 
   return {
-    title: `${blog.title} | Makrana Premium`,
+    // `absolute` skips the "Makrana Premium - %s" template from the root layout,
+    // so the brand name is not repeated in the title.
+    title: { absolute: `${blog.title} | Makrana Premium` },
     description,
     keywords: [
       blog.title,
@@ -49,7 +89,7 @@ export async function generateMetadata({
       "premium marble products",
     ],
     alternates: {
-      canonical: `https://www.makranapremium.com/blogs/post/${slug}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title: `${blog.title} | Makrana Premium`,
@@ -116,8 +156,60 @@ export default async function BlogPostPage({ params }: PageProps) {
   const categoryTitle =
     blog.category === "marble-slab" ? "Marble Slabs" : "Marble Articles";
 
+  const postUrl = `${SITE_URL}/blogs/post/${blog.slug}`;
+
+  // Structured data for search engines (invisible to visitors).
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: blog.title,
+        description: getExcerpt(blog.content) || undefined,
+        image: blog.featuredImage ? [blog.featuredImage] : undefined,
+        datePublished: new Date(blog.publishedAt).toISOString(),
+        dateModified: new Date(blog.updatedAt).toISOString(),
+        mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
+        author: {
+          "@type": "Organization",
+          name: "Makrana Premium",
+          url: SITE_URL,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Makrana Premium",
+          url: SITE_URL,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: categoryTitle,
+            item: `${SITE_URL}/blogs/${categoryPath}`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: blog.title,
+            item: postUrl,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* ====================================================== */}
       {/* HERO */}
       {/* ====================================================== */}
