@@ -26,7 +26,6 @@ export const metadata: Metadata = {
     google: "qPm6LNMecy8-8L1PfFsQKVZnIEnEsAAEDXDJZqiKiE4",
   },
   metadataBase: new URL("https://makranapremium.com"),
-  // metadataBase: new URL('http://localhost.com'),
   title: {
     default: "Makrana Premium",
     template: "Makrana Premium - %s",
