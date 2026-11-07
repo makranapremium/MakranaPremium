@@ -1,6 +1,54 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Gem } from "lucide-react";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Makrana Marble Blog | Guides, Design Ideas & Marble Insights",
+  description:
+    "Explore the world of Makrana marble through expert guides, marble slab insights, selection tips, pricing information, interior design inspiration, marble articles, and craftsmanship stories from Rajasthan.",
+  keywords: [
+    "Makrana marble blog",
+    "Makrana marble guides",
+    "marble slab guide",
+    "marble slab types",
+    "marble slab prices",
+    "Makrana marble articles",
+    "marble design ideas",
+    "marble interior design",
+    "marble care tips",
+    "marble craftsmanship",
+    "Rajasthan marble",
+    "marble buying guide",
+  ],
+  alternates: {
+    canonical: "https://www.makranapremium.com/blogs",
+  },
+  openGraph: {
+    title: "Makrana Marble Blog | Makrana Premium",
+    description:
+      "Discover marble slab guides, marble articles, design inspiration, buying tips, and expert insights about authentic Makrana marble.",
+    url: `https://www.makranapremium.com/blogs`,
+    siteName: "Makrana Premium",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Makrana Marble Blog | Makrana Premium",
+    description:
+      "Read marble guides, slab insights, design inspiration, and expert articles about Makrana marble.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
+};
+
 export default function BlogPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">

@@ -17,13 +17,12 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-
   const blog = await getBlogBySlug(slug);
 
   if (!blog) {
     return {
-      title: "Blog Post Not Found",
-      description: "The blog post you're looking for does not exist.",
+      title: "Blog Post Not Found | Makrana Premium",
+      description: "The requested Makrana marble article could not be found.",
       robots: {
         index: false,
         follow: false,
@@ -31,29 +30,59 @@ export async function generateMetadata({
     };
   }
 
+  const description = `${blog.title}. Discover expert insights, detailed guides, design inspiration, and useful information about Makrana marble, marble slabs, and handcrafted marble products.`;
+
+  const canonicalUrl = `https://www.makranapremium.com/blogs/post/${slug}`;
+
   return {
     title: `${blog.title} | Makrana Premium`,
-    description: `${blog.title} - Expert insights, guides, and articles about Makrana marble.`,
-
-    openGraph: {
-      title: blog.title,
-      description: `${blog.title} - Expert insights, guides, and articles about Makrana marble.`,
-      type: "article",
-      publishedTime: blog.publishedAt.toString(),
-      modifiedTime: blog.updatedAt.toString(),
-      images: [
-        {
-          url: blog.featuredImage,
-          alt: blog.title,
-        },
-      ],
+    description,
+    keywords: [
+      blog.title,
+      "Makrana marble",
+      "Makrana marble articles",
+      "marble guides",
+      "marble slab information",
+      "marble design ideas",
+      "marble craftsmanship",
+      "Rajasthan marble",
+      "premium marble products",
+    ],
+    alternates: {
+      canonical: `https://www.makranapremium.com/blogs/post/${slug}`,
     },
-
+    openGraph: {
+      title: `${blog.title} | Makrana Premium`,
+      description,
+      url: canonicalUrl,
+      siteName: "Makrana Premium",
+      type: "article",
+      publishedTime: new Date(blog.publishedAt).toISOString(),
+      modifiedTime: new Date(blog.updatedAt).toISOString(),
+      images: blog.featuredImage
+        ? [
+            {
+              url: blog.featuredImage,
+              alt: `${blog.title} - Makrana Premium`,
+            },
+          ]
+        : undefined,
+    },
     twitter: {
       card: "summary_large_image",
-      title: blog.title,
-      description: `${blog.title} - Expert insights about Makrana marble.`,
-      images: [blog.featuredImage],
+      title: `${blog.title} | Makrana Premium`,
+      description,
+      images: blog.featuredImage ? [blog.featuredImage] : undefined,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
   };
 }

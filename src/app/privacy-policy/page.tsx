@@ -8,7 +8,14 @@ import { Separator } from "@/components/ui/separator";
 export const metadata = {
   title: "Privacy Policy | Makrana Premium",
   description:
-    "Privacy Policy for Makrana Premium — marble articles and handicrafts from Makrana, Rajasthan.",
+    "Read the Makrana Premium Privacy Policy to understand how we collect, use, protect, and manage your personal information.",
+  alternates: {
+    canonical: "https://www.makranapremium.com/privacy-policy",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const sections = [

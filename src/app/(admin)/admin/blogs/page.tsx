@@ -80,12 +80,6 @@ export default function BlogsPage() {
   const [deletingBlogId, setDeletingBlogId] = useState<string | null>(null);
   const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
 
-  /**
-   * ============================================================
-   * LOAD BLOGS
-   * ============================================================
-   */
-
   const loadBlogs = async () => {
     try {
       setIsLoading(true);
@@ -108,22 +102,11 @@ export default function BlogsPage() {
     loadBlogs();
   }, []);
 
-  /**
-   * ============================================================
-   * CREATE BLOG
-   * ============================================================
-   */
   const handleAddBlog = () => {
     setEditingBlogId(null);
     setFormData(createEmptyForm());
     setIsEditorOpen(true);
   };
-
-  /**
-   * ============================================================
-   * EDIT BLOG
-   * ============================================================
-   */
 
   const handleEditBlog = async (blog: Blog) => {
     setEditingBlogId(blog.id);
@@ -153,12 +136,6 @@ export default function BlogsPage() {
     }
   };
 
-  /**
-   * ============================================================
-   * CANCEL
-   * ============================================================
-   */
-
   const handleCancel = () => {
     if (isSaving || isUploadingFeaturedImage) return;
 
@@ -166,12 +143,6 @@ export default function BlogsPage() {
     setEditingBlogId(null);
     setFormData(createEmptyForm());
   };
-
-  /**
-   * ============================================================
-   * TITLE → SLUG
-   * ============================================================
-   */
 
   const handleTitleChange = (title: string) => {
     setFormData((previous) => ({
@@ -194,12 +165,6 @@ export default function BlogsPage() {
     }));
   };
 
-  /**
-   * ============================================================
-   * FEATURED IMAGE UPLOAD
-   * ============================================================
-   */
-
   const handleFeaturedImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -207,18 +172,12 @@ export default function BlogsPage() {
 
     if (!file) return;
 
-    /*
-     * Validate image type
-     */
     if (!file.type.startsWith("image/")) {
       toast.warning("Please select a valid image file.");
       event.target.value = "";
       return;
     }
 
-    /*
-     * 10MB maximum
-     */
     if (file.size > 10 * 1024 * 1024) {
       toast.warning("Image size must be less than 10MB.");
       event.target.value = "";
@@ -249,18 +208,9 @@ export default function BlogsPage() {
     } finally {
       setIsUploadingFeaturedImage(false);
 
-      /*
-       * Allows the user to select the same image again.
-       */
       event.target.value = "";
     }
   };
-
-  /**
-   * ============================================================
-   * REMOVE FEATURED IMAGE
-   * ============================================================
-   */
 
   const handleRemoveFeaturedImage = () => {
     if (isUploadingFeaturedImage) return;
@@ -270,18 +220,6 @@ export default function BlogsPage() {
       featuredImage: "",
     }));
   };
-
-  /**
-   * ============================================================
-   * SAVE / UPDATE BLOG
-   * ============================================================
-   */
-
-  /**
-   * ============================================================
-   * CREATE / UPDATE BLOG
-   * ============================================================
-   */
 
   const handleSave = async () => {
     if (!formData.title.trim()) {
@@ -310,12 +248,6 @@ export default function BlogsPage() {
         content: formData.content,
       };
 
-      /*
-       * ============================================================
-       * UPDATE EXISTING BLOG
-       * ============================================================
-       */
-
       if (editingBlogId) {
         const data = await updateBlog(editingBlogId, blogData);
 
@@ -327,22 +259,11 @@ export default function BlogsPage() {
 
         toast.success("Blog post updated successfully.");
       } else {
-        /*
-         * ============================================================
-         * CREATE NEW BLOG
-         * ============================================================
-         */
         const data = await createBlog(blogData);
         setBlogs((previousBlogs) => [data.blog, ...previousBlogs]);
 
         toast.success("Blog post created successfully.");
       }
-
-      /*
-       * ============================================================
-       * CLOSE EDITOR
-       * ============================================================
-       */
 
       setIsEditorOpen(false);
       setEditingBlogId(null);
@@ -364,12 +285,6 @@ export default function BlogsPage() {
       setIsSaving(false);
     }
   };
-
-  /**
-   * ============================================================
-   * DELETE BLOG
-   * ============================================================
-   */
 
   const handleDelete = (blog: Blog) => {
     setBlogToDelete(blog);
@@ -413,12 +328,6 @@ export default function BlogsPage() {
     }
   };
 
-  /**
-   * ============================================================
-   * DATE FORMAT
-   * ============================================================
-   */
-
   const formatDate = (date: string | undefined) => {
     if (!date) return "-";
 
@@ -434,12 +343,6 @@ export default function BlogsPage() {
       year: "numeric",
     });
   };
-
-  /**
-   * ============================================================
-   * EDITOR VIEW
-   * ============================================================
-   */
 
   if (isEditorOpen) {
     return (
@@ -540,10 +443,6 @@ export default function BlogsPage() {
                   </div>
                 </div>
 
-                {/* ====================================================== */}
-                {/* FEATURED IMAGE */}
-                {/* ====================================================== */}
-
                 <div className="space-y-3">
                   <div>
                     <label className="text-sm font-medium text-gray-800">
@@ -630,10 +529,6 @@ export default function BlogsPage() {
                   )}
                 </div>
 
-                {/* ====================================================== */}
-                {/* TIPTAP */}
-                {/* ====================================================== */}
-
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-800">
                     Blog Content
@@ -649,10 +544,6 @@ export default function BlogsPage() {
                     }
                   />
                 </div>
-
-                {/* ====================================================== */}
-                {/* ACTIONS */}
-                {/* ====================================================== */}
 
                 <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end">
                   <Button
@@ -691,12 +582,6 @@ export default function BlogsPage() {
       </div>
     );
   }
-
-  /**
-   * ============================================================
-   * BLOG LIST VIEW
-   * ============================================================
-   */
 
   return (
     <div className="mt-20 min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50">
